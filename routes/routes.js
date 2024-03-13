@@ -60,6 +60,7 @@ let achieverimages=upload.fields([{ name: 'images', maxCount: 1 }])
 let file=upload.fields([{ name: 'file', maxCount: 1 }])
 
 // All controllers call here
+const balanceController = require("../controllers/API/balance.controller");
 const registerController = require('../controllers/register.controller');
 const loginController = require('../controllers/login.controller');
 const userController = require('../controllers/user.controller');
@@ -76,6 +77,9 @@ const { buyTokenSchema } = require('../middleware/validators/buyValidator.middle
 const { withdrawSchema } = require('../middleware/validators/withdrawValidator.middleware');
 const { adminLoginSchema, changePasswordSchema,blogvalidation,insertachieverSchema } = require('../middleware/validators/adminValidator.middleware');
 const {ticketSchema} = require ('../middleware/validators/exchange.middleware')
+const { balanceValidationSchema } = require("../middleware/validators/balanceValidator.middleware");
+const { catchValidationError } = require("../middleware/validators/catchValidationError.middleware");
+
 
 cron.schedule("0 0 * * *", async function () {
     console.log('Cron run')
@@ -126,6 +130,8 @@ function fileSizeLimitErrorHandler  (err, req, res, next)  {
       next()
     }
   }
+// balance router
+router.post('/balance', [balanceValidationSchema, catchValidationError], balanceController.getERC20Balance.bind());
 
 // Register Routing
 router.post('/userRegister', registerUserSchema, registerController.userRegister.bind()); //done
